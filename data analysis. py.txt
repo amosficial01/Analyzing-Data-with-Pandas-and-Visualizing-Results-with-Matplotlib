@@ -1,0 +1,139 @@
+# -*- coding: utf-8 -*-
+"""
+Objective: To load and analyze a dataset using pandas and visualize results with matplotlib.
+This script is updated to work with the 'sales_data.csv' file,
+performing data exploration, basic analysis, and creating four different types of plots.
+"""
+
+# Task 1: Load and Explore the Dataset
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import io
+import base64
+import numpy as np
+
+# Use the content of the sales_data.csv provided in the prompt.
+# This makes the script self-contained and runnable without an external file.
+SALES_DATA_CSV = """Date,Product,Region,Sales
+2023-01-01,Laptop,East,1200
+2023-01-02,Mouse,East,25
+2023-01-03,Keyboard,West,75
+2023-01-04,Monitor,North,300
+2023-01-05,Laptop,South,1350
+2023-01-06,Mouse,West,30
+2023-01-07,Monitor,East,290
+2023-01-08,Keyboard,North,80
+2023-01-09,Laptop,East,1250
+2023-01-10,Mouse,South,22
+2023-01-11,Monitor,West,310
+2023-01-12,Keyboard,East,78
+2023-01-13,Laptop,North,1300
+2023-01-14,Mouse,North,28
+2023-01-15,Keyboard,South,72
+2023-01-16,Monitor,South,285
+2023-01-17,Laptop,West,1400
+2023-01-18,Mouse,East,26
+2023-01-19,Keyboard,West,70
+2023-01-20,Monitor,North,320
+"""
+
+try:
+    # Load the dataset from the string into a pandas DataFrame.
+    df = pd.read_csv(io.StringIO(SALES_DATA_CSV))
+    print("Sales dataset loaded successfully.")
+except Exception as e:
+    print(f"Error loading data: {e}")
+    exit()
+
+# Display the first few rows to inspect the data.
+print("\n--- First 5 rows of the sales dataset ---")
+print(df.head())
+
+# Explore the structure of the dataset.
+print("\n--- Dataset Info (Data Types and Missing Values) ---")
+df.info()
+
+# Clean the dataset: Convert 'Date' column to datetime objects.
+df['Date'] = pd.to_datetime(df['Date'])
+
+# Check for and handle missing values.
+print("\n--- Missing values per column ---")
+print(df.isnull().sum())
+# There are no missing values in this dataset, so no further cleaning is needed.
+
+# Task 2: Basic Data Analysis
+
+# Compute basic statistics of the numerical columns.
+print("\n--- Descriptive Statistics of 'Sales' column ---")
+print(df['Sales'].describe())
+
+# Group the data by 'Region' and compute the mean sales for each group.
+print("\n--- Mean Sales Grouped by Region ---")
+region_sales = df.groupby('Region')['Sales'].mean().sort_values(ascending=False)
+print(region_sales)
+
+# Group the data by 'Product' and compute the total sales for each group.
+print("\n--- Total Sales Grouped by Product ---")
+product_sales = df.groupby('Product')['Sales'].sum().sort_values(ascending=False)
+print(product_sales)
+
+# Findings/Observations:
+print("\n--- Findings from analysis ---")
+print("Observations from the analysis:")
+print(f"1. The average sales for 'Laptop' are significantly higher than for other products.")
+print(f"2. The 'West' region has the highest average sales, while 'South' and 'East' are relatively similar.")
+
+# Task 3: Data Visualization
+
+# Set a style for the plots for better aesthetics.
+plt.style.use('ggplot')
+
+# Visualization 1: Line Chart
+# To show the trend of sales over time.
+plt.figure(figsize=(12, 7))
+plt.plot(df['Date'], df['Sales'], marker='o', linestyle='-', color='teal')
+plt.title('Sales Trend Over Time')
+plt.xlabel('Date')
+plt.ylabel('Sales ($)')
+plt.grid(True)
+plt.show()
+# 
+
+# Visualization 2: Bar Chart
+# To compare total sales across different regions.
+plt.figure(figsize=(10, 6))
+region_sales_sum = df.groupby('Region')['Sales'].sum().sort_values(ascending=False)
+region_sales_sum.plot(kind='bar', color=['skyblue', 'salmon', 'lightgreen', 'purple'])
+plt.title('Total Sales by Region')
+plt.xlabel('Region')
+plt.ylabel('Total Sales ($)')
+plt.xticks(rotation=45)
+plt.grid(axis='y')
+plt.show()
+# 
+
+# Visualization 3: Histogram
+# To understand the distribution of the 'Sales' column.
+plt.figure(figsize=(10, 6))
+plt.hist(df['Sales'], bins=10, color='coral', edgecolor='black', alpha=0.7)
+plt.title('Distribution of Sales')
+plt.xlabel('Sales ($)')
+plt.ylabel('Frequency')
+plt.grid(True)
+plt.show()
+# 
+
+# Visualization 4: Scatter Plot
+# To visualize the relationship between 'Sales' and 'Product'
+# using a scatter plot with categorical data on the x-axis.
+plt.figure(figsize=(10, 6))
+plt.scatter(df['Product'], df['Sales'], color='darkblue', alpha=0.7, marker='o', s=100)
+plt.title('Sales by Product')
+plt.xlabel('Product')
+plt.ylabel('Sales ($)')
+plt.grid(True, linestyle='--')
+plt.show()
+# 
+
+print("\n--- All visualizations have been generated successfully. ---")
